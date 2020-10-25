@@ -1,0 +1,9 @@
+D:\Atmel\App\RFID_v2\RFID_v2\bin\Release\RFID_v2.exe.config
+D:\Atmel\App\RFID_v2\RFID_v2\bin\Release\RFID_v2.exe
+D:\Atmel\App\RFID_v2\RFID_v2\bin\Release\RFID_v2.pdb
+D:\Atmel\App\RFID_v2\RFID_v2\obj\Release\RFID_v2.Form1.resources
+D:\Atmel\App\RFID_v2\RFID_v2\obj\Release\RFID_v2.Properties.Resources.resources
+D:\Atmel\App\RFID_v2\RFID_v2\obj\Release\RFID_v2.csproj.GenerateResource.cache
+D:\Atmel\App\RFID_v2\RFID_v2\obj\Release\RFID_v2.csproj.CoreCompileInputs.cache
+D:\Atmel\App\RFID_v2\RFID_v2\obj\Release\RFID_v2.exe
+D:\Atmel\App\RFID_v2\RFID_v2\obj\Release\RFID_v2.pdb
