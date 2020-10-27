@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -64,9 +65,9 @@ namespace RFID_v2
 
         private void btShow_Click(object sender, EventArgs e)
         {
-    //#if DEBUG
-    //        rxData = "A79C45E997\nA79C45E997\nA79C45E997\nA79C45E997\n";
-    //#endif
+#if DEBUG
+            rxData = "A79C45E997\nA79C45E997\nA79C45E997\nA79C45E997\n";
+#endif
             Console.WriteLine(rxData);
             Console.WriteLine("size:" + rxData.Length);
             for(int i = 0; i < rxData.Length; i++)
@@ -84,6 +85,68 @@ namespace RFID_v2
                 row["RFID Tag"] = item;
                 dt.Rows.InsertAt(row, 0);
                 
+            }
+        }
+        static DataTable ConvertToDataTable<T>(List<T> models)
+        {
+            DataTable dataTable = new DataTable(typeof(T).Name);
+
+            //Get all the properties
+            PropertyInfo[] Props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            // Loop through all the properties            
+            // Adding Column to our datatable
+            foreach (PropertyInfo prop in Props)
+            {
+                //Setting column names as Property names  
+                dataTable.Columns.Add(prop.Name);
+            }
+            // Adding Row
+            foreach (T item in models)
+            {
+                var values = new object[Props.Length];
+                for (int i = 0; i < Props.Length; i++)
+                {
+                    //inserting property values to datatable rows  
+                    values[i] = Props[i].GetValue(item, null);
+                }
+                // Finally add value to datatable  
+                dataTable.Rows.Add(values);
+            }
+            return dataTable;
+        }
+
+        private void btExport_Click(object sender, EventArgs e)
+        {
+            if(tbFileName.Text =="" ||tbFolder.Text == "")
+            {
+                MessageBox.Show("Vui lòng chọn nơi lưu file!");
+                return;
+            }
+            string customPathFile = tbFolder.Text + tbFileName.Text;
+#if DEBUG
+            var studentList = new List<Student> {
+                new Student
+                {
+                    RfidTag = listTag[0],
+                    StudentID = "20162385",
+                    StudentName = "Dong linh"
+                },
+                new Student
+                {
+                    RfidTag = listTag[1],
+                    StudentID = "20162185",
+                    StudentName = "Quang linh"
+                }
+            };
+#endif
+            try {
+                ExcelExport.GenerateExcel(ConvertToDataTable(studentList), @customPathFile);
+                MessageBox.Show("Lưu thành công!");
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Lưu không thành công. Vui lòng làm lại!");
             }
         }
     }
