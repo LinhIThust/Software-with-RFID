@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Reflection;
@@ -21,14 +22,16 @@ namespace RFID_v2
         const int BAUDRATE= 4800;
         DataTable dt;
         List<string> listTag;
+        List<Student> listStudent;
         string rxData = "";
         public Form1()
         {
             InitializeComponent();
             listTag = new List<string>();
             dt = new DataTable();
+            listStudent = new List<Student>();
             dt.Columns.Add("RFID Tag");
-            dt.Columns.Add("Studen ID");
+            dt.Columns.Add("Student ID");
             dt.Columns.Add("Name");
             dgvLog.DataSource = dt;
             string[] listPort = SerialPort.GetPortNames();
@@ -66,7 +69,7 @@ namespace RFID_v2
         private void btShow_Click(object sender, EventArgs e)
         {
 #if DEBUG
-            rxData = "A79C45E997\nA79C45E997\nA79C45E997\nA79C45E997\n";
+            rxData = "1234123411\n1234123412\n1234123413\n1234123414\n";
 #endif
             Console.WriteLine(rxData);
             Console.WriteLine("size:" + rxData.Length);
@@ -79,14 +82,44 @@ namespace RFID_v2
                 }
             }
             Console.WriteLine("size:" + listTag.Count());
-            foreach (var item in listTag)
+            readFileDB(tbPath.Text);
+            foreach (var item in listStudent)
             { 
                 DataRow row = dt.NewRow();
-                row["RFID Tag"] = item;
+                row["RFID Tag"] = item.RfidTag;
+                row["Student ID"] = item.StudentID;
+                row["Name"] = item.StudentName;
                 dt.Rows.InsertAt(row, 0);
                 
             }
         }
+
+        private void readFileDB(string text)
+        {
+            string[] readText = File.ReadAllLines(text);
+            foreach (string s in readText)
+            {
+               for(int i = 0; i < listTag.Count; i++)
+                {
+                    if (s.Contains(listTag[i])){
+                        addStudent(s);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void addStudent(string s)
+        {
+            string idTag = s.Substring(0,10);
+            Console.WriteLine(idTag);
+            int index = s.LastIndexOf(',');
+            string idStudent = s.Substring(11,index-11);
+            string name = s.Substring(index+1, s.Length - index-1);
+            Console.WriteLine(name+"  "+idStudent);
+            listStudent.Add(new Student(idTag, idStudent, name));
+        }
+
         static DataTable ConvertToDataTable<T>(List<T> models)
         {
             DataTable dataTable = new DataTable(typeof(T).Name);
